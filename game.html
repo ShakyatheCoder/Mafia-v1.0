@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mafia Game</title>
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+<div class="container">
+    <h1>Mafia Game</h1>
+    <p id="roleDisplay">Your Role:</p>
+    <p id="phaseDisplay">Phase:</p>
 
+    <div id="voteDiv">
+        <h3>Vote to eliminate:</h3>
+        <ul id="voteList"></ul>
+    </div>
+
+    <div id="chatDiv">
+        <h3>Chat</h3>
+        <div id="messages"></div>
+        <input type="text" id="chatInput" placeholder="Type message">
+        <button id="sendBtn">Send</button>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

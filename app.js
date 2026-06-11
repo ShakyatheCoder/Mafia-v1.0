@@ -1,61 +1,70 @@
-// DOM elements
-const createBtn = document.getElementById("createBtn");
-const joinBtn = document.getElementById("joinBtn");
-const startGameBtn = document.getElementById("startGameBtn");
-const playerNameInput = document.getElementById("playerName");
-const roomDiv = document.getElementById("roomDiv");
-const roomTitle = document.getElementById("roomTitle");
-const playerListEl = document.getElementById("playerList");
+const nameInput = document.getElementById("name");
+const status = document.getElementById("status");
 
-// Game state
-let players = [];
-let roomCode = "";
+let room = JSON.parse(localStorage.getItem("room")) || null;
 
-// Helpers
-function generateRoomCode() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "";
-    for(let i=0;i<6;i++){
-        code += chars[Math.floor(Math.random()*chars.length)];
-    }
-    return code;
+function saveRoom() {
+  localStorage.setItem("room", JSON.stringify(room));
 }
 
-function updatePlayerList() {
-    playerListEl.innerHTML = "";
-    players.forEach(p => {
-        const li = document.createElement("li");
-        li.innerText = p;
-        playerListEl.appendChild(li);
-    });
-    startGameBtn.disabled = players.length < 5 || players.length > 15;
+function createRoom() {
+  if (room) {
+    status.innerText = "You already have a room. Refresh to reset.";
+    return;
+  }
+
+  const name = nameInput.value.trim();
+  if (!name) return status.innerText = "Enter your name";
+
+  room = {
+    code: Math.random().toString(36).substring(2, 7).toUpperCase(),
+    host: name,
+    players: [name],
+    started: false
+  };
+
+  saveRoom();
+  status.innerText = "Room created: " + room.code;
+
+  setTimeout(() => {
+    location.href = "game.html";
+  }, 800);
 }
 
-// Button events
-createBtn.onclick = () => {
-    const name = playerNameInput.value.trim();
-    if(!name){ alert("Enter your name!"); return;}
-    players.push(name);
-    roomCode = generateRoomCode();
-    roomTitle.innerText = `Room Code: ${roomCode}`;
-    roomDiv.classList.remove("hidden");
-    updatePlayerList();
-};
+function joinRoom() {
+  const name = nameInput.value.trim();
+  if (!name) return status.innerText = "Enter your name";
 
-joinBtn.onclick = () => {
-    const name = playerNameInput.value.trim();
-    if(!name){ alert("Enter your name!"); return;}
-    const code = prompt("Enter room code:");
-    if(!code){ alert("No room code entered"); return;}
-    roomCode = code.toUpperCase();
-    players.push(name);
-    roomTitle.innerText = `Room Code: ${roomCode}`;
-    roomDiv.classList.remove("hidden");
-    updatePlayerList();
-};
+  let code = prompt("Enter room code:");
+  if (!code) return;
 
-// Start game
-startGameBtn.onclick = () => {
-    localStorage.setItem("players", JSON.stringify(players));
-    window.location.href = "game.html";
-};
+  code = code.toUpperCase();
+
+  let existing = JSON.parse(localStorage.getItem("room"));
+
+  if (!existing || existing.code !== code) {
+    status.innerText = "Room not found";
+    return;
+  }
+
+  if (existing.players.includes(name)) {
+    status.innerText = "Already in room";
+    return;
+  }
+
+  if (existing.players.length >= 15) {
+    status.innerText = "Room full";
+    return;
+  }
+
+  existing.players.push(name);
+  room = existing;
+  saveRoom();
+
+  setTimeout(() => {
+    location.href = "game.html";
+  }, 500);
+}
+
+document.getElementById("create").onclick = createRoom;
+document.getElementById("join").onclick = joinRoom;

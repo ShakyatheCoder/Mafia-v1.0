@@ -1,1 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mafia Game</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>MAFIA GAME</h1>
+    <div class="menu">
+        <input type="text" id="playerName" placeholder="Enter your name">
+        <button id="createBtn">Create Room</button>
+        <button id="joinBtn">Join Room</button>
+    </div>
 
+    <div id="roomDiv" class="hidden">
+        <h2 id="roomTitle"></h2>
+        <p>Players:</p>
+        <ul id="playerList"></ul>
+        <button id="startGameBtn" disabled>Start Game</button>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

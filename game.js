@@ -1,59 +1,54 @@
-// DOM elements
-const roleDisplay = document.getElementById("roleDisplay");
-const phaseDisplay = document.getElementById("phaseDisplay");
-const messagesDiv = document.getElementById("messages");
-const chatInput = document.getElementById("chatInput");
-const sendBtn = document.getElementById("sendBtn");
-const voteList = document.getElementById("voteList");
+let room = JSON.parse(localStorage.getItem("room"));
+let me = room.players[room.players.length - 1];
 
-// Game state
-let players = JSON.parse(localStorage.getItem("players")) || [];
-let mafiaCount = players.length <= 6 ? 1 : (players.length <=9 ? 2 : 3);
-let roles = Array(players.length).fill("Citizen");
-for(let i=0;i<mafiaCount;i++) roles[i]="Mafia";
-roles.sort(()=> Math.random()-0.5);
+const phase = document.getElementById("phase");
+const playersDiv = document.getElementById("players");
+const roleDiv = document.getElementById("role");
+const chatDiv = document.getElementById("chat");
 
-let myName = prompt("Enter your player name again:");
-let myIndex = players.indexOf(myName);
-let myRole = roles[myIndex];
-
-roleDisplay.innerText = `Your Role: ${myRole}`;
-phaseDisplay.innerText = "Phase: Night";
-
-// Voting setup
-function setupVote() {
-    voteList.innerHTML = "";
-    players.forEach((p,i)=>{
-        if(i===myIndex) return; // can't vote self
-        const li = document.createElement("li");
-        li.innerText = p;
-        li.onclick = ()=> votePlayer(p);
-        voteList.appendChild(li);
-    });
+function renderPlayers() {
+  playersDiv.innerHTML = "";
+  room.players.forEach(p => {
+    let d = document.createElement("div");
+    d.innerText = p;
+    playersDiv.appendChild(d);
+  });
 }
 
-// Chat
-let chatMessages = [];
+function assignRoles() {
+  let count = room.players.length;
+  let mafiaCount = count <= 6 ? 1 : count <= 9 ? 2 : 3;
+  let roles = Array(count).fill("Citizen");
+  for (let i = 0; i < mafiaCount; i++) roles[i] = "Mafia";
+  roles.sort(() => Math.random() - 0.5);
+  room.roles = roles;
+  localStorage.setItem("room", JSON.stringify(room));
 
-sendBtn.onclick = ()=> {
-    const msg = chatInput.value.trim();
-    if(!msg) return;
-    chatMessages.push(`${myName}: ${msg}`);
-    updateChat();
-    chatInput.value="";
-};
-
-function updateChat(){
-    messagesDiv.innerHTML = "";
-    chatMessages.forEach(m=>{
-        const div = document.createElement("div");
-        div.innerText = m;
-        messagesDiv.appendChild(div);
-    });
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  let myIndex = room.players.indexOf(me);
+  roleDiv.innerText = "Your Role: " + roles[myIndex];
 }
 
-// Voting logic
-let votes = {};
-function votePlayer(name){
-    votes[myName] =
+function startGame() {
+  if (room.players.length < 5) {
+    alert("Need at least 5 players");
+    return;
+  }
+  room.started = true;
+  phase.innerText = "NIGHT";
+  assignRoles();
+  localStorage.setItem("room", JSON.stringify(room));
+}
+
+document.getElementById("start").onclick = startGame;
+
+function sendMsg() {
+  let input = document.getElementById("msg");
+  if (!input.value) return;
+  let msg = document.createElement("div");
+  msg.innerText = me + ": " + input.value;
+  chatDiv.appendChild(msg);
+  chatDiv.scrollTop = chatDiv.scrollHeight;
+  input.value = "";
+}
+
+renderPlayers();

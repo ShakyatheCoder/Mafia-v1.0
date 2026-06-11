@@ -2,24 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Mafia Game</title>
+<title>Mafia Online</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-    <h1>MAFIA GAME</h1>
-    <div class="menu">
-        <input type="text" id="playerName" placeholder="Enter your name">
-        <button id="createBtn">Create Room</button>
-        <button id="joinBtn">Join Room</button>
+
+<div class="center">
+    <h1 class="title">MAFIA</h1>
+
+    <input id="name" placeholder="Enter your name" maxlength="16">
+
+    <div class="btns">
+        <button id="create">Create Room</button>
+        <button id="join">Join Room</button>
     </div>
 
-    <div id="roomDiv" class="hidden">
-        <h2 id="roomTitle"></h2>
-        <p>Players:</p>
-        <ul id="playerList"></ul>
-        <button id="startGameBtn" disabled>Start Game</button>
-    </div>
+    <p id="status"></p>
 </div>
 
 <script src="app.js"></script>
